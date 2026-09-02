@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+.venv_patent/
+
+# 案件工作区（含保密交底书内容，不入库）
+cases/
+
+# 生成产物与临时文件
+tools/media/
+*.tmp
+~$*
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
