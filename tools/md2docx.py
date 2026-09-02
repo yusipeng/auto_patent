@@ -22,18 +22,22 @@ from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml.ns import qn
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_TEMPLATE = os.path.join(BASE, '..', 'templates', '-交底书V1.docx')
+DEFAULT_TEMPLATE = os.path.join(BASE, '..', 'templates', '技术交底书模板-发明新型.docx')
 VENV_PY = os.path.join(BASE, '..', '.venv_patent', 'Scripts', 'python.exe')
 PUPPETEER_CFG = os.path.join(BASE, 'puppeteer-edge.json')
 MMDC = 'npx.cmd' if os.name == 'nt' else 'npx'
 
-# 模板章节标题 (实际模板结构)
+# 模板章节标题 (2026-09 新版模板: 零~八 + 3 个无编号节)
 SECTION_TITLES = [
     '零、术语定义和解释', '一、发明名称', '二、技术领域',
-    '三、现有技术及其存在的缺点', '四、本申请提案要解决的技术问题、核心技术方案及所能达到的技术效果',
-    '五、本申请提案的技术方案的详细阐述', '六、本提案的价值体现',
+    '三、现有技术的技术方案', '四、现有技术的缺点及本申请提案要解决的技术问题',
+    '五、本申请提案的技术方案的详细阐述', '六、本申请提案的关键点和欲保护点',
+    '七、与第三条中最接近的现有技术相比，本申请提案有何技术优点',
+    '八、发散思维以及规避方案思考',
+    '本申请提案的商业价值',
+    '本申请提案的侵权证据可获得性/标准进展情况',
+    '其他有助于理解本申请提案的技术资料',
 ]
-SUBSECTIONS_OF_SIX = ['被其他公司使用的可能性', '被本公司使用的可能性', '不可替代性', '侵权取证获取难度', '专利分级及理由', '其他有助于理解本申请提案的技术资料']
 
 
 # ---------------- Markdown 解析 ----------------
@@ -212,7 +216,20 @@ def add_heading_para(doc, text, level=2):
 
 def add_table(doc, header, rows):
     tbl = doc.add_table(rows=1 + len(rows), cols=len(header))
-    tbl.style = 'Table Grid'
+    try:
+        tbl.style = 'Table Grid'
+    except KeyError:
+        # 模板无 Table Grid 样式: 手动加边框
+        from docx.oxml import OxmlElement
+        tblPr = tbl._tbl.tblPr
+        borders = OxmlElement('w:tblBorders')
+        for edge in ('top', 'left', 'bottom', 'right', 'insideH', 'insideV'):
+            el = OxmlElement(f'w:{edge}')
+            el.set(qn('w:val'), 'single')
+            el.set(qn('w:sz'), '4')
+            el.set(qn('w:color'), '000000')
+            borders.append(el)
+        tblPr.append(borders)
     tbl.alignment = WD_TABLE_ALIGNMENT.CENTER
     for j, h in enumerate(header):
         cell = tbl.rows[0].cells[j]
@@ -258,8 +275,7 @@ def build_docx(md_text, out_path, template_path=DEFAULT_TEMPLATE, workdir=None, 
             run = cell.paragraphs[0].add_run(inv_name)
             set_run_font(run, size=11, bold=False)
 
-    # 按模板骨架段落定位: 模板正文在"六、本提案的价值体现"之后的段落应被替换/追加
-    # 简化策略: 模板正文全部保留为骨架说明会与内容冲突 —— 删除模板 body 中从"零、术语定义和解释"开始的所有骨架段, 重新写入
+    # 按模板骨架段落定位: 删除模板 body 中"附件3-"标题行及从"零、术语定义和解释"开始的所有骨架段, 重新写入
     body = doc.element.body
     to_remove = []
     seen_zero = False
@@ -267,6 +283,9 @@ def build_docx(md_text, out_path, template_path=DEFAULT_TEMPLATE, workdir=None, 
         tag = child.tag.split('}')[1]
         if tag == 'p':
             txt = ''.join(t.text or '' for t in child.iter(qn('w:t')))
+            if txt.strip().startswith('附件3-'):
+                to_remove.append(child)
+                continue
             if txt.strip().startswith('零、术语定义和解释'):
                 seen_zero = True
             if seen_zero:

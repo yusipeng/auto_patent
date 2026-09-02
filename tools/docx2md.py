@@ -9,6 +9,12 @@ import docx
 from docx.oxml.ns import qn
 
 SECTION_RE = re.compile(r'^(零|一|二|三|四|五|六|七|八)、')
+# 新版模板无编号节标题 (2026-09)
+NONNUM_SECTIONS = [
+    '本申请提案的商业价值',
+    '本申请提案的侵权证据可获得性/标准进展情况',
+    '其他有助于理解本申请提案的技术资料',
+]
 HINT_RE = re.compile(r'^[【（(]?[【]|^【')  # 模板提示段落
 
 def iter_block_items(doc):
@@ -95,10 +101,13 @@ def convert(docx_path, out_md, keep_hints=False):
             if not text:
                 continue
             # 封面杂项行跳过
-            if text in ('公司专利申请', '技术交底书', '〔集团名称〕', '〔集团名称〕'):
+            if text in ('公司专利申请', '技术交底书', '〔集团名称〕', '〔集团名称〕', '附件3-发明&实用新型交底书模板'):
+                continue
+            if text.startswith('附件3-'):
                 continue
             m = SECTION_RE.match(text)
-            if m and len(text) < 40:
+            is_nonnum = text in NONNUM_SECTIONS
+            if (m or is_nonnum) and len(text) < 40:
                 if text in seen_headings:
                     # 已见过的标题: 若是发明名称且尚未写入内容, 补入封面名称
                     if text == '一、发明名称' and not name_emitted and cover_name:
