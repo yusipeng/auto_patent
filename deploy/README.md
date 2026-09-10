@@ -122,6 +122,7 @@ flowchart LR
 | CNIPA 检索空/超时 | WAF 等待不足 → `EPUB_WAF_MAX_WAIT_SEC=60` 重试 |
 | Google Patents 503 | 限流 → 改用 `tools/crawl/cnipa_epub_search.py` |
 | 命令报 Hermes venv 污染 | 统一用 `PYTHONPATH="" .venv_patent/Scripts/python.exe`（Windows） |
+| 仓库脱敏 | 公开仓库不放公司/个人信息；模板自备（`templates/README.md`）；提交前跑 `python deploy/privacy_check.py` |
 
 ## 8. 本机已验证环境（2026-09-10）
 

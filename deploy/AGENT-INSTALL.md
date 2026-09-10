@@ -90,3 +90,5 @@ done
 | WorkBuddy 找不到 | 确认放 `~/.workbuddy/skills/`；重启 WorkBuddy 或重新打开技能面板 |
 | clone 失败 / 网络问题 | 公开仓库直接克隆（git 凭据仅在推送时需要）；检查网络与代理 |
 | 想彻底移除 | `python deploy/agent_install.py --remove --all`（或按 Agent 单独 `--remove`） |
+| 仓库与本地版本差异 | 仓库内 skill / SOUL 为**脱敏快照**；本地实跑版可能含真实封面信息（仅限本地）——同步进仓库前先跑 `python deploy/privacy_check.py` |
+| 模板从哪来 | 仓库不含 `*.docx` 模板（公开仓库不放公司信息）：按 `templates/README.md` 自备 |
