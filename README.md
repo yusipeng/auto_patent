@@ -58,7 +58,15 @@ PYTHONPATH="" .venv_patent/Scripts/python.exe tools/versioned_output.py cases/<�
 | extract_pdf.py      | PDF → 纯文本（pymupdf）                           | ✅                  |
 | extract_comments.py | 提取 docx 内 Word 批注                             | ✅                  |
 | new_case.py         | 创建案件目录结构                                   | ✅                  |
-| puppeteer-edge.json | mermaid-cli 复用本机 Edge 的配置                   | ✅                  |
+| puppeteer-edge.json | mermaid-cli 复用本机 Edge 的配置                       | ✅                  |
+| cdp_drive.py        | CDP 直连本机 Chrome（9223），绕过 browser 工具启动问题 | ✅                  |
+| crawl/cnipa_epub_search.py | CNIPA 公布公告系统检索（Playwright 过 WAF；含摘要/IPC；公开号不带 A 后缀） | ✅ 实测 |
+| verify_docx.py      | 交底书产出校验：12 章节匹配 / OMML 公式数 / 图片数 / $ 残留 / 失败标注 | ✅ 按定稿格式实测 |
+| verify_cover_and_media.py | 封面发明名称回填、媒体内嵌检查、页数（Word COM） | ✅                  |
+| page_count.py       | Word COM 统计 docx 页数                               | ✅                  |
+| batch_patent_search.py / batch_patent_search2.py | 批量查新检索（QUERIES 列表可改；结果 JSON 供 analyze_patents.py 聚合） | ✅ |
+| dl_drugfuture.py    | drugfuture 对比文件 PDF 下载（人工过验证码；`--outdir` 指定案件 01_source） | ✅ |
+| fetch_case_refs.py  | 批量抓取对比文件著录+摘要，归档到案件 01_source        | ✅                  |
 
 ## 模板结构速查（2026-09 新版交底书）
 

@@ -16,6 +16,9 @@ Thumbs.db
 .tmp_render/
 *.bak
 
+# 查新检索输出（可由 batch_patent_search 重新生成）
+tools/patent_search_results*.json
+
 # IDE
 .idea/
 .vscode/
