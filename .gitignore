@@ -12,6 +12,10 @@ tools/media/
 ~$*
 Thumbs.db
 
+# 渲染/验证临时目录与备份
+.tmp_render/
+*.bak
+
 # IDE
 .idea/
 .vscode/
