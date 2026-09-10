@@ -48,6 +48,7 @@ python deploy/install.py --all       # venv + skills + bots（幂等；已存在
 
 - 手工步骤（填 API Key、重启桌面版）、依赖清单与验证清单：**`deploy/README.md`**
 - 部署包内容：`deploy/skills/`（5 个 skill 源）、`deploy/profiles/`（8 个 bot 的 SOUL.md + `_skeleton/` 骨架）、`deploy/install.py`
+- 其他 AI Agent（Claude Code / Codex / WorkBuddy / CodeBuddy 等）：`python deploy/agent_install.py --all`，安装指南见 `deploy/AGENT-INSTALL.md`；仓库根 `AGENTS.md` / `CLAUDE.md` 供 Agent 自动读取
 
 ## 版本管理规范
 
@@ -85,6 +86,7 @@ PYTHONPATH="" .venv_patent/Scripts/python.exe tools/versioned_output.py cases/<�
 | dl_drugfuture.py    | drugfuture 对比文件 PDF 下载（人工过验证码；`--outdir` 指定案件 01_source） | ✅ |
 | fetch_case_refs.py  | 批量抓取对比文件著录+摘要，归档到案件 01_source        | ✅                  |
 | deploy/install.py   | 迁移部署脚本：venv + skills + bot profiles 一键安装（`--check` 体检） | ✅ 实测 |
+| deploy/agent_install.py | 把 5 个 skill 安装到 Claude Code / Codex / WorkBuddy / CodeBuddy 技能目录 | ✅ 本机 4 家实测 |
 
 ## 模板结构速查（2026-09 新版交底书）
 

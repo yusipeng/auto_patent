@@ -8,6 +8,7 @@ description: Use when 调度或排查专利交底书自动化流水线。7 个 B
 把论文预印本转化为符合《专利申请技术交底书》的交底书 + 检索报告。8 个常驻 Bot（Hermes Bot Mode，每个是独立 profile），在主会话 @ 接力协作。
 
 > **迁移/复制到新机器**：仓库 `deploy/` 收录 5 个 skill 源与 8 个 bot profile 骨架，一键部署 `python deploy/install.py --all`（venv + skills + bots）；步骤、依赖与验证清单见 `deploy/README.md`。
+> **其他 AI Agent**（Claude Code / Codex / WorkBuddy / CodeBuddy 等）：`python deploy/agent_install.py --all` 把本技能装进对应技能目录（路径表与卸载见 `deploy/AGENT-INSTALL.md`）。
 
 ## 模板版本（2026-09 新版，重大变更）
 

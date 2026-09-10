@@ -13,7 +13,9 @@
 | `deploy/skills/` | 5 个 skill 源 | `<HERMES_HOME>/skills/<category>/<name>/` |
 | `deploy/profiles/<bot>/SOUL.md` | 8 个 bot 角色定义 | `<HERMES_HOME>/profiles/<bot>/SOUL.md` |
 | `deploy/profiles/_skeleton/` | `profile.yaml`（Bot Mode 托管标记）、`.no-bundled-skills`、`.env`（注释模板）、`config.template.yaml`（脱敏） | 新 bot 目录骨架 |
-| `deploy/install.py` | 部署/体检脚本（幂等） | — |
+| `deploy/install.py` | Hermes 侧部署/体检脚本（幂等） | — |
+| `deploy/agent_install.py` | 把 5 个 skill 装到其他 AI Agent（Claude Code / Codex / WorkBuddy / CodeBuddy） | 见 `deploy/AGENT-INSTALL.md` |
+| `deploy/AGENT-INSTALL.md` | 给 AI Agent 的安装指南（一键指令 + 路径表 + 验证 + 卸载） | — |
 | `deploy/requirements-venv.txt` | `.venv_patent` 依赖清单 | 仓库根 `.venv_patent/` |
 
 > `<HERMES_HOME>`：Windows 默认 `%LOCALAPPDATA%\hermes`；macOS / Linux 默认 `~/.hermes`。
@@ -51,6 +53,17 @@ python deploy/install.py --all        # ② venv + skills + bots（幂等，已�
 ```
 
 单独使用：`--venv` / `--skills` / `--bots`；`--force` 覆盖已存在文件；`--hermes-home DIR` 指定 Hermes 配置目录。
+
+### 其他 AI Agent（Claude Code / Codex / WorkBuddy / CodeBuddy 等）
+
+非 Hermes 的 Agent 用独立安装器把 5 个 skill 装进各自技能目录（`~/.claude/skills`、`~/.agents/skills`、`~/.workbuddy/skills`、`~/.codebuddy/skills`）：
+
+```bash
+python deploy/agent_install.py --list   # 探测本机 Agent 与技能目录现状
+python deploy/agent_install.py --all    # 安装到全部探测到的 Agent（幂等，可 --remove 卸载）
+```
+
+路径表、验证方法、卸载与「一键交给 Agent」的指令：**`deploy/AGENT-INSTALL.md`**。仓库根 `AGENTS.md`（通用规范）与 `CLAUDE.md` 由 Agent 打开仓库时自动读取。
 
 ## 3. 必做的手工步骤
 
