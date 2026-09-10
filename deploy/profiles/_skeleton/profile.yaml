@@ -1,0 +1,11 @@
+# Bot Mode 托管标记骨架（8 个 patent bot 共用）
+#
+# profile.yaml 带 ui_meta.hermes-bots 时，canonical Bot Chat 才会注入 message_agent
+# 工具与队友名册（is_bot_mode_managed=True）；缺了它 bot 收不到 @ 消息、无法 bot-to-bot。
+# 排查与修复见 skill: hermes-bot-orchestration（references/bot-mode-a2a-diagnosis.md）。
+ui_meta:
+  hermes-bots:
+    version: 1
+    sectionId: sec-mtlbv2ms-5h69z
+_ui_meta_revisions:
+  hermes-bots: 1

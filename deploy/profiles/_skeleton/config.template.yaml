@@ -1,0 +1,46 @@
+# bot profile 配置模板（脱敏）——部署时复制为各 bot 的 config.yaml
+# 注意：profile 配置互相隔离、不继承主配置；api_key 请填入或从你本机的主配置/
+# 其他 bot 复制（严禁提交到 git）。provider 有变更时按 skill:
+# hermes-bot-fleet-config 从主配置整段同步 custom_providers。
+# 另有 browser.use_real_profile 段（仅 patent_searcher 需要）：
+#   browser:
+#     use_real_profile: true
+model:
+  default: deepseek-v4-flash
+  provider: huoshan-code-plan
+custom_providers:
+- name: deepseek
+  base_url: https://api.deepseek.com
+  api_key: <在此填入 deepseek 的 API Key>
+  api_mode: chat_completions
+  models:
+    deepseek-v4-pro:
+      context_length: 1000000
+      name: DeepSeek V4 Pro
+    deepseek-v4-flash:
+      context_length: 1000000
+      name: DeepSeek V4 Flash
+  model: deepseek-v4-pro
+- name: huoshan-code-plan
+  base_url: https://ark.cn-beijing.volces.com/api/coding/v3
+  api_key: <在此填入 huoshan-code-plan 的 API Key>
+  api_mode: codex_responses
+  models:
+    glm-5.3:
+      context_length: 1024000
+      name: glm-5.3
+    deepseek-v4-flash:
+      context_length: 1024000
+      name: deepseek-v4-flash
+    deepseek-v4-pro:
+      context_length: 1024000
+      name: deepseek-v4-pro
+  model: glm-5.3
+plugins:
+  enabled: []
+_config_version: 41
+agent:
+  reasoning_effort: max
+fallback_providers:
+- provider: custom:deepseek
+  model: deepseek-v4-flash

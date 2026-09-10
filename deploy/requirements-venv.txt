@@ -1,0 +1,8 @@
+# auto_patent 工具链依赖（.venv_patent）
+# 创建：python -m venv .venv_patent && .venv_patent/Scripts/python -m pip install -r deploy/requirements-venv.txt
+# 或直接：python deploy/install.py --venv
+python-docx==1.2.0
+pymupdf==1.28.2
+matplotlib==3.11.1
+requests==2.34.2
+pywin32==312; sys_platform == "win32"

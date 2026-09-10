@@ -1,13 +1,15 @@
 # 专利交底书自动化流水线
 
-把论文预印本 → 公司专利交底书 docx + 检索报告 docx，全程 7 个 Hermes Bot 专人专项协作。
+把论文预印本 → 公司专利交底书 docx + 检索报告 docx，全程 8 个 Hermes Bot 专人专项协作。
 
 ## 快速开始
 
-1. 在 Hermes 桌面 **Bots** 标签页确认 7 个 Bot 在线：patent_searcher / patent_writer / patent_reviewer / patent_auditor / patent_docx / patent_report / patent_reviser
+1. 在 Hermes 桌面 **Bots** 标签页确认 8 个 Bot 在线：patent_searcher / patent_writer / patent_reviewer / patent_examiner / patent_auditor / patent_docx / patent_report / patent_reviser
 2. 主会话发：`@patent_searcher 检索关键词：<关键词>`（默认近 6 个月）
 3. 按 4 个里程碑人工把关推进（选论文 → 确认方案 → 评审意见 → 定稿）
 4. 评审任务，主会话发：`@patent_searcher  修订 cases/<发明名称>/：批注在 03_review/xxx.docx，对比专利在 01_source/xxx.pdf：`
+
+> **迁移到新机器**：工作流 skill、8 个 bot profile、工具链均已收入 `deploy/`——克隆后 `python deploy/install.py --all` 一键装好 venv + 5 个 skill + 8 个 bot profile，详见 **`deploy/README.md`**。
 
 ## 目录（以下路径均相对仓库根目录）
 
@@ -19,6 +21,8 @@ auto_patent/                         # 仓库根（本 README 所在目录）
     检索报告模板 （修订版）.docx   # 检索报告（本次未调整）
   cases/<发明名称>/                   # 每个案件：01_source/ 02_draft/ 03_review/ 04_docx/
   tools/                             # 工具脚本（见下）
+  references/                        # 参考规范（查新规范、模板参考、自检清单）
+  deploy/                            # 迁移部署包（5 skill 源 + 8 bot 骨架 + install.py）
   .venv_patent/                      # Python venv：python-docx 1.2.0 / pymupdf / matplotlib
 ```
 
@@ -31,6 +35,19 @@ auto_patent/                         # 仓库根（本 README 所在目录）
 - 封面值仿宋_GB2312 12pt（保留原蓝色）；术语/参数等表格宋体 10pt，表头加粗、通栏居中
 - 标题用 **Word 自动编号**：一级「一、~八、」自动生成（"零、"为文字），子节「3.1 / 5.1 / 6.1」自动生成——增删章节时编号自动重排
 - 公式为 Word 原生公式（OMML，可双击编辑）；列表沿用 md 文字编号（"1." 等）
+
+## 迁移到新机器（可复制部署）
+
+工作流 skill、8 个 bot profile、工具链、模板均已收入仓库，可整工程复制：
+
+```bash
+git clone <repo-url> D:/auto_patent && cd D:/auto_patent
+python deploy/install.py --check     # 环境体检（工具 / venv / skills / bots 现状）
+python deploy/install.py --all       # venv + skills + bots（幂等；已存在自动跳过）
+```
+
+- 手工步骤（填 API Key、重启桌面版）、依赖清单与验证清单：**`deploy/README.md`**
+- 部署包内容：`deploy/skills/`（5 个 skill 源）、`deploy/profiles/`（8 个 bot 的 SOUL.md + `_skeleton/` 骨架）、`deploy/install.py`
 
 ## 版本管理规范
 
@@ -58,7 +75,7 @@ PYTHONPATH="" .venv_patent/Scripts/python.exe tools/versioned_output.py cases/<�
 | extract_pdf.py      | PDF → 纯文本（pymupdf）                           | ✅                  |
 | extract_comments.py | 提取 docx 内 Word 批注                             | ✅                  |
 | new_case.py         | 创建案件目录结构                                   | ✅                  |
-| puppeteer-edge.json | mermaid-cli 复用本机 Edge 的配置                       | ✅                  |
+| puppeteer-edge.json | mermaid-cli 复用本机 Edge 的配置                   | ✅                  |
 | cdp_drive.py        | CDP 直连本机 Chrome（9223），绕过 browser 工具启动问题 | ✅                  |
 | crawl/cnipa_epub_search.py | CNIPA 公布公告系统检索（Playwright 过 WAF；含摘要/IPC；公开号不带 A 后缀） | ✅ 实测 |
 | verify_docx.py      | 交底书产出校验：12 章节匹配 / OMML 公式数 / 图片数 / $ 残留 / 失败标注 | ✅ 按定稿格式实测 |
@@ -67,20 +84,24 @@ PYTHONPATH="" .venv_patent/Scripts/python.exe tools/versioned_output.py cases/<�
 | batch_patent_search.py / batch_patent_search2.py | 批量查新检索（QUERIES 列表可改；结果 JSON 供 analyze_patents.py 聚合） | ✅ |
 | dl_drugfuture.py    | drugfuture 对比文件 PDF 下载（人工过验证码；`--outdir` 指定案件 01_source） | ✅ |
 | fetch_case_refs.py  | 批量抓取对比文件著录+摘要，归档到案件 01_source        | ✅                  |
+| deploy/install.py   | 迁移部署脚本：venv + skills + bot profiles 一键安装（`--check` 体检） | ✅ 实测 |
 
 ## 模板结构速查（2026-09 新版交底书）
 
 零 术语定义和解释（三列表格）→ 一 发明名称 → 二 技术领域（14 选）→ 三 现有技术的技术方案 → 四 现有技术的缺点及本申请提案要解决的技术问题 → 五 技术方案详细阐述（≥50% 篇幅）→ 六 关键点和欲保护点 → 七 技术优点 → 八 发散思维以及规避方案思考 → 商业价值 → 侵权证据可获得性/标准进展情况 → 其他技术资料
 
-## 流水线（7 Bot + 4 人工确认点）
+## 流水线（8 Bot + 4 人工确认点）
 
 ```
 关键词 → searcher(检索+筛选) → [用户选1~3篇] → searcher(Grill-Me方向细化)
       → [用户确认清单] → writer(撰写) → reviewer(内容评审)
       → 不过则打回 writer(≤2轮) → auditor(格式审计) → 不过则打回(≤2轮)
-      → docx(转写docx, V1) → [用户评审意见] → report(检索报告, 对比文件回流writer更新三)
+      → examiner(审查员预审) → docx(转写docx, V1) → [用户评审意见]
+      → report(检索报告, 对比文件回流writer更新三)
       → reviser(批注+对比专利修订, V+1) → [定稿]
 ```
+
+> 任何新版本（md vN+1 / docx V+1）必须重跑 reviewer + auditor 复核后才能进入下一环节；打回最多 2 轮；结案出评分卡（不打包 zip）。
 
 ## 关键事实
 
@@ -90,4 +111,4 @@ PYTHONPATH="" .venv_patent/Scripts/python.exe tools/versioned_output.py cases/<�
 - 检索报告模板「二」之后直接「四」（无三），保持跳号原样；本次格式更新不含检索报告
 - 新交底书模板无保密页眉（检索报告模板有），各随其模板
 - 所有命令需 `PYTHONPATH=""` 前缀（避免 Hermes venv 污染）
-- 详细调度手册：`patent-workflow` skill（主会话加载即得）
+- 详细调度手册：`patent-workflow` skill（主会话加载即得）；复制迁移：`deploy/README.md`
