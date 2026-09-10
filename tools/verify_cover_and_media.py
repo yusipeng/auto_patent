@@ -55,7 +55,8 @@ else:
             soffice = cand
             break
     if soffice:
-        tmp = os.path.join(os.environ.get('TEMP', r'C:\Users\<user>\AppData\Local\Temp'), 'v9_pdf_check')
+        import tempfile
+        tmp = os.path.join(tempfile.gettempdir(), 'v9_pdf_check')
         os.makedirs(tmp, exist_ok=True)
         pdf = os.path.join(tmp, 'out.pdf')
         r = subprocess.run([soffice, '--headless', '--convert-to', 'pdf', '--outdir', tmp, path],

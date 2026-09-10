@@ -16,6 +16,12 @@ Thumbs.db
 .tmp_render/
 *.bak
 
+# 模板自备（含公司/个人信息，不入库）；脱敏检查本地词表
+templates/*.docx
+/*.docx
+deploy/privacy_extra.txt
+tools/cover_local.json
+
 # 查新检索输出（可由 batch_patent_search 重新生成）
 tools/patent_search_results*.json
 

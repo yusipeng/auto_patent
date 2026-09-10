@@ -19,8 +19,8 @@
 ## 一键指令（复制给你的 Agent 即可）
 
 ```text
-请安装 auto_patent 专利流水线技能（私有仓库，需已配置 git 凭据）：
-1) git clone https://github.com/<owner>/auto_patent.git D:/auto_patent  （已存在则 cd 后 git pull）
+请安装 auto_patent 专利流水线技能（公开仓库，直接克隆即可）：
+1) git clone <本仓库地址> D:/auto_patent  （<本仓库地址>=本仓库的 clone URL；已存在则 cd 后 git pull）
 2) cd D:/auto_patent && python deploy/agent_install.py --list
 3) python deploy/agent_install.py --all
 4) 验证：列出你的技能目录下新增的 patent-workflow / docx-from-markdown / cn-patent-pdf-download /
@@ -88,5 +88,5 @@ done
 | Claude Code 找不到 | 首次创建 `~/.claude/skills` 目录后需重启一次 |
 | Codex 找不到 | 用户级在 `~/.agents/skills`；项目级在仓库 `.agents/skills`（勿放 `~/.codex/skills`） |
 | WorkBuddy 找不到 | 确认放 `~/.workbuddy/skills/`；重启 WorkBuddy 或重新打开技能面板 |
-| 私有仓库 clone 失败 | 先配置 GitHub 凭据（HTTPS token 或 SSH key） |
+| clone 失败 / 网络问题 | 公开仓库直接克隆（git 凭据仅在推送时需要）；检查网络与代理 |
 | 想彻底移除 | `python deploy/agent_install.py --remove --all`（或按 Agent 单独 `--remove`） |

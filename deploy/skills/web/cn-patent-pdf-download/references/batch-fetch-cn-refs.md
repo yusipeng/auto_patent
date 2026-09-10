@@ -1,6 +1,6 @@
 # 按公开号批量抓取 CN 对比文件著录+摘要（2026-09-04 实测）
 
-适用：余工批注列出多件对比文件（CN…A/B），需补齐 01_source 缺失项时。
+适用：评审人批注列出多件对比文件（CN…A/B），需补齐 01_source 缺失项时。
 
 ## 工具
 `D:\auto_patent\tools\crawl\cnipa_epub_search.py`（Playwright 过 CNIPA WAF）

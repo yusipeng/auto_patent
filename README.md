@@ -1,6 +1,8 @@
 # 专利交底书自动化流水线
 
-把论文预印本 → 公司专利交底书 docx + 检索报告 docx，全程 8 个 Hermes Bot 专人专项协作。
+把论文预印本 → 专利交底书 docx + 检索报告 docx，全程 8 个 Hermes Bot 专人专项协作。
+
+> ⚠️ 本仓库为**公开仓库**：不得提交公司名称、项目名称、姓名、联系方式（邮箱/电话）、内部代号等个人信息。提交前请运行 `python deploy/privacy_check.py` 自查。
 
 ## 快速开始
 
@@ -9,36 +11,34 @@
 3. 按 4 个里程碑人工把关推进（选论文 → 确认方案 → 评审意见 → 定稿）
 4. 评审任务，主会话发：`@patent_searcher  修订 cases/<发明名称>/：批注在 03_review/xxx.docx，对比专利在 01_source/xxx.pdf：`
 
-> **迁移到新机器**：工作流 skill、8 个 bot profile、工具链均已收入 `deploy/`——克隆后 `python deploy/install.py --all` 一键装好 venv + 5 个 skill + 8 个 bot profile，详见 **`deploy/README.md`**。
+> **迁移到新机器**：`python deploy/install.py --all` 一键装好 venv + 5 个 skill + 8 个 bot profile，详见 **`deploy/README.md`**；
+> 其他 AI Agent（Claude Code / Codex / WorkBuddy 等）：`python deploy/agent_install.py --all`，见 **`deploy/AGENT-INSTALL.md`**。
 
 ## 目录（以下路径均相对仓库根目录）
 
 ```
 auto_patent/                         # 仓库根（本 README 所在目录）
-  templates/                         # 模板基准（只读）
-    技术交底书模板-发明新型-用户定稿.docx  # ★输出格式基准（2026-09-07 用户定稿）
-    技术交底书模板-发明新型.docx          # 官方原版留档（不再用于输出）
-    检索报告模板 （修订版）.docx   # 检索报告（本次未调整）
+  templates/                         # 模板目录（*.docx 不入库、需自备 → templates/README.md）
   cases/<发明名称>/                   # 每个案件：01_source/ 02_draft/ 03_review/ 04_docx/
   tools/                             # 工具脚本（见下）
   references/                        # 参考规范（查新规范、模板参考、自检清单）
-  deploy/                            # 迁移部署包（5 skill 源 + 8 bot 骨架 + install.py）
+  deploy/                            # 迁移部署包（5 skill 源 + 8 bot 骨架 + 安装/体检脚本）
   .venv_patent/                      # Python venv：python-docx 1.2.0 / pymupdf / matplotlib
 ```
 
 > 所有命令均在**仓库根目录**执行（示例中的相对路径均以此为基准）。
 
-**输出格式基准**（由用户定稿文件提取，md2docx 全部输出按此排版）：
+**输出格式基准**（由一份手工定稿文档经 `tools/make_template.py` 提取，md2docx 全部输出按此排版）：
 - 页面 A4，上下边距 2.54cm / 左右 3.17cm，页脚页码
 - 大标题黑体 22pt 加粗居中；一级标题黑体 16pt、二/三级 15pt、四级 14pt（段前 16/14/12/10 磅）
 - 正文宋体/Times New Roman 小四（12pt），行距 1.25，段前后各 5 磅，首行缩进 2 字符，两端对齐
-- 封面值仿宋_GB2312 12pt（保留原蓝色）；术语/参数等表格宋体 10pt，表头加粗、通栏居中
+- 封面值仿宋_GB2312 12pt 蓝色；术语/参数等表格宋体 10pt，表头加粗、通栏居中
 - 标题用 **Word 自动编号**：一级「一、~八、」自动生成（"零、"为文字），子节「3.1 / 5.1 / 6.1」自动生成——增删章节时编号自动重排
 - 公式为 Word 原生公式（OMML，可双击编辑）；列表沿用 md 文字编号（"1." 等）
 
 ## 迁移到新机器（可复制部署）
 
-工作流 skill、8 个 bot profile、工具链、模板均已收入仓库，可整工程复制：
+工作流 skill、8 个 bot profile、工具链均可整工程复制：
 
 ```bash
 git clone <repo-url> D:/auto_patent && cd D:/auto_patent
@@ -49,6 +49,7 @@ python deploy/install.py --all       # venv + skills + bots（幂等；已存在
 - 手工步骤（填 API Key、重启桌面版）、依赖清单与验证清单：**`deploy/README.md`**
 - 部署包内容：`deploy/skills/`（5 个 skill 源）、`deploy/profiles/`（8 个 bot 的 SOUL.md + `_skeleton/` 骨架）、`deploy/install.py`
 - 其他 AI Agent（Claude Code / Codex / WorkBuddy / CodeBuddy 等）：`python deploy/agent_install.py --all`，安装指南见 `deploy/AGENT-INSTALL.md`；仓库根 `AGENTS.md` / `CLAUDE.md` 供 Agent 自动读取
+- **模板自备**：`templates/*.docx` 不入库（含公司信息），按 `templates/README.md` 放入你的模板
 
 ## 版本管理规范
 
@@ -67,12 +68,12 @@ PYTHONPATH="" .venv_patent/Scripts/python.exe tools/versioned_output.py cases/<�
 
 | 脚本                | 用途                                               | 状态                |
 | ------------------- | -------------------------------------------------- | ------------------- |
-| md2docx.py          | 交底书 md → docx（用户定稿样式：黑体标题/宋体正文/Word 自动编号；Mermaid、LaTeX→OMML 公式、表格） | ✅ 按定稿格式实测 |
+| md2docx.py          | 交底书 md → docx（定稿样式：黑体标题/宋体正文/Word 自动编号；Mermaid、LaTeX→OMML 公式、表格） | ✅ 按定稿格式实测 |
 | docx2md.py          | 已有交底书 docx → md 源（导入；兼容自动编号合成、OMML 公式还原） | ✅ 往返实测通过     |
-| make_template.py    | 从定稿交底书提取空白"格式模板"（更换格式基准时用）  | ✅ 已用于本次换版   |
+| make_template.py    | 从定稿交底书提取空白"格式模板"（更换格式基准时用）  | ✅ 已用于换版       |
 | docx_render_pdf.py  | docx → PDF（本机 Word 渲染，排版核对用）           | ✅                  |
 | versioned_output.py | 产物版本管理（V1 起步，修改即副本+1）              | ✅ 实测通过         |
-| patent_search.py    | Google Patents 检索（走 Clash 127.0.0.1:7897）     | ✅ 实测返回真实专利 |
+| patent_search.py    | Google Patents 检索（走本机代理 127.0.0.1:7897，可改） | ✅ 实测返回真实专利 |
 | extract_pdf.py      | PDF → 纯文本（pymupdf）                           | ✅                  |
 | extract_comments.py | 提取 docx 内 Word 批注                             | ✅                  |
 | new_case.py         | 创建案件目录结构                                   | ✅                  |
@@ -80,13 +81,14 @@ PYTHONPATH="" .venv_patent/Scripts/python.exe tools/versioned_output.py cases/<�
 | cdp_drive.py        | CDP 直连本机 Chrome（9223），绕过 browser 工具启动问题 | ✅                  |
 | crawl/cnipa_epub_search.py | CNIPA 公布公告系统检索（Playwright 过 WAF；含摘要/IPC；公开号不带 A 后缀） | ✅ 实测 |
 | verify_docx.py      | 交底书产出校验：12 章节匹配 / OMML 公式数 / 图片数 / $ 残留 / 失败标注 | ✅ 按定稿格式实测 |
-| verify_cover_and_media.py | 封面发明名称回填、媒体内嵌检查、页数（Word COM） | ✅                  |
+| verify_cover_and_media.py | 封面回填、媒体内嵌检查、页数（Word COM）      | ✅                  |
 | page_count.py       | Word COM 统计 docx 页数                               | ✅                  |
 | batch_patent_search.py / batch_patent_search2.py | 批量查新检索（QUERIES 列表可改；结果 JSON 供 analyze_patents.py 聚合） | ✅ |
 | dl_drugfuture.py    | drugfuture 对比文件 PDF 下载（人工过验证码；`--outdir` 指定案件 01_source） | ✅ |
 | fetch_case_refs.py  | 批量抓取对比文件著录+摘要，归档到案件 01_source        | ✅                  |
 | deploy/install.py   | 迁移部署脚本：venv + skills + bot profiles 一键安装（`--check` 体检） | ✅ 实测 |
 | deploy/agent_install.py | 把 5 个 skill 安装到 Claude Code / Codex / WorkBuddy / CodeBuddy 技能目录 | ✅ 本机 4 家实测 |
+| deploy/privacy_check.py | 脱敏体检：邮箱 / 手机号 / 用户路径 / 本地补充词表（提交前自查） | ✅ 实测 |
 
 ## 模板结构速查（2026-09 新版交底书）
 
@@ -107,10 +109,9 @@ PYTHONPATH="" .venv_patent/Scripts/python.exe tools/versioned_output.py cases/<�
 
 ## 关键事实
 
-- 模板章节以 `templates/` 最新文件为准（2026-09：零~八 + 3 无编号节）
-- **输出格式基准 = `templates/技术交底书模板-发明新型-用户定稿.docx`**（2026-09-07 定稿：黑体标题/宋体正文小四/1.25 倍行距/首行缩进 2 字符/Word 自动编号）；md2docx 已全量按此输出
-- 封面固定：申报单位=〔申报单位〕 / 申报类型=发明 / 发明人·技术联系人=〔联系人〕（封面值保留原仿宋蓝色）
-- 检索报告模板「二」之后直接「四」（无三），保持跳号原样；本次格式更新不含检索报告
-- 新交底书模板无保密页眉（检索报告模板有），各随其模板
+- 模板章节以自备模板为准（2026-09：零~八 + 3 无编号节）；模板放入 `templates/`（见 `templates/README.md`）
+- **输出格式基准** = `templates/技术交底书模板-发明新型-用户定稿.docx`（自备；用 `tools/make_template.py` 从定稿文档提取）；md2docx 全量按此输出
+- 检索报告模板「二」之后直接「四」（无三），保持跳号原样
 - 所有命令需 `PYTHONPATH=""` 前缀（避免 Hermes venv 污染）
 - 详细调度手册：`patent-workflow` skill（主会话加载即得）；复制迁移：`deploy/README.md`
+- **公开仓库约定**：不提交公司名/项目名/姓名/联系方式/内部代号；提交前 `python deploy/privacy_check.py`

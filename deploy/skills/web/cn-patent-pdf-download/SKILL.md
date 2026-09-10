@@ -38,7 +38,7 @@ description: "Use when 下载中国专利 PDF/文本（对比文件）。含来�
 
 **对比文件细节核验流程**（reviewer 报"描述超出归档摘要"时）：见 `references/prior-art-fulltext-verification.md`（用 `/en` 全文核验具体数值/选项是否真实存在 → 每件一份核实材料归档 01_source → 区分"描述有据但缺出处"与"描述失真"）。
 
-**无对比文件案件的创造性增强**（01_source 空、余工未给号时）：不引用 NPL，将 arXiv 论文创新点提炼整合进方案——见 `references/arxiv-innovation-integration.md`。
+**无对比文件案件的创造性增强**（01_source 空、评审人未给号时）：不引用 NPL，将 arXiv 论文创新点提炼整合进方案——见 `references/arxiv-innovation-integration.md`。
 
 ## Playwright + 系统 Chrome（Windows，免下载浏览器）
 ```bash

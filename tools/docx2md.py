@@ -33,6 +33,17 @@ for _t in SECTION_TITLES:
     SECTION_LOOKUP[re.sub(r'\s+', '', _t)] = _t
     SECTION_LOOKUP[re.sub(r'\s+', '', re.sub(r'^[一二三四五六七八九十]+、', '', _t))] = _t
 
+# 封面/页首杂项标题：默认仅通用词；公司全称等本地补充词放同目录 cover_local.json（不入库，数组格式）
+COVER_SKIP_TITLES = {'技术交底书'}
+_cover_local = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cover_local.json')
+if os.path.exists(_cover_local):
+    try:
+        import json as _json
+        with open(_cover_local, encoding='utf-8') as _f:
+            COVER_SKIP_TITLES |= set(_json.load(_f))
+    except Exception:
+        pass
+
 
 def iter_block_items(doc):
     """按 body 顺序产出 ('p', paragraph_element) / ('tbl', table_element)"""
@@ -342,8 +353,8 @@ def convert(docx_path, out_md, keep_hints=False):
                     text = _unescape_outside_math(s).strip()
             if not text:
                 continue
-            # 封面杂项行跳过
-            if text in ('公司专利申请', '技术交底书', '〔集团名称〕', '〔集团名称〕', '附件3-发明&实用新型交底书模板'):
+            # 封面/页首杂项行跳过（默认通用词；公司全称等补充词放 tools/cover_local.json，不入库）
+            if text in COVER_SKIP_TITLES:
                 continue
             if text.startswith('附件3-'):
                 continue
